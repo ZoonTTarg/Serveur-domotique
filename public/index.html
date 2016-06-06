@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8"> 
+        <meta charset="utf-8">
+        <title>Domotique</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <meta name="description" content="" />
+        <link href="stylesheets/bootstrap.min.css" rel="stylesheet">
+		<link href="stylesheets/bootstrap-slider.css" rel="stylesheet">
+		<link href="stylesheets/my.css" rel="stylesheet">
+		<link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
+		
+		<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+		<script src="javascripts/jquery-1.11.3.js"></script>
+		<!-- Include all compiled plugins (below), or include individual files as needed -->
+		<script src="javascripts/bootstrap.min.js"></script>
+		<!-- Slider -->
+		<script src="javascripts/bootstrap-slider.js"></script>
+		<script src="javascripts/bootstrap-slider.js"></script>
+		<script src="/javascripts/socket.io.js"></script>
+		<script>
+			  var socket = io.connect('http://192.168.0.51:443/');
+			  socket.on('news', function (data) {
+			    console.log(data);
+			    socket.emit('my other event', { my: 'data' });
+			  })
+			  .on('statut_action', function (data) {
+			    //alert("status_change! "+data.id+"="+data.statut);
+			  });
+		</script>
+
+		<script type='text/javascript'>
+			var codesAppareils = {};
+			codesAppareils['allP1'] = ["D02","D03","D04"];
+			codesAppareils['allP2'] = ["D01"];
+			codesAppareils['BureauP2'] = ["D01"];
+			codesAppareils['SAMP1'] = ["D02"];
+			codesAppareils['CuisineP1'] = ["D03"];
+			codesAppareils['TerrasseP1'] = ["D04"];
+
+			$(document).ready(function() {		
+				//Mise à jour du libelle pourcentage ouverture	
+				$('#allP1, #allP2, #TerrasseP1, #CuisineP1, #SAMP1, #BureauP2').slider({
+					formatter: function(value) {
+						return value+"%";
+					}
+				});		
+
+				/*$("#BureauP2, #SAMP1").on("change", function(slideEvt) {
+					alert("change")
+					$("#sliderbureau").text(slideEvt.value);
+				});*/
+
+				
+				//MAJ vers le serveur pour informer de la nouvelle valeur
+				$('#allP1, #allP2, #TerrasseP1, #CuisineP1, #SAMP1, #BureauP2').on("change",
+				   function(event) {
+				   	var appareils = eval("codesAppareils."+event.target.id);
+				   	console.log("Source="+appareils);
+				   	socket.emit('change', { id: appareils, value: event.value.newValue, oldValue: event.value.oldValue });
+					return true;
+				})
+			});
+			
+		</script>
+		
+		
+		
+        <style type="text/css">
+            
+		</style>
+	</head>
+    
+    <!-- HTML code from Bootply.com editor -->
+    
+    <body>
+        <nav class="navbar navbar-default navbar-fixed-top">
+			<div class="container">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+						<span class="sr-only">Menu</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="#">Volets</a>
+				</div>
+				<div id="navbar" class="navbar-collapse collapse">
+					<form class="navbar-form navbar-right">
+						<div class="form-group">
+							<input type="text" placeholder="Identifiant" class="form-control">
+						</div>
+						<div class="form-group">
+							<input type="password" placeholder="Password" class="form-control">
+						</div>
+						<button type="submit" class="btn btn-success">Log in</button>
+					</form>
+				</div><!--/.navbar-collapse -->
+			</div>
+		</nav>
+        <div class="accordion" id="myAccordion">
+			<div class="panel" id="panelP1">
+				<div class="accordion-heading container entete">
+					<div class="row" id="rowHeaderP1">
+						<div class="col-xs-6">
+							<a class="accordion-toggle" data-toggle="collapse" data-target="#collapsible-1" data-parent="#myAccordion" href="#collapsible-1">
+								Séjour
+							</a>
+						</div>
+						<div class="col-xs-6 text-right">
+							<input id="allP1" data-slider-id='allP1Slider' type="text" data-slider-min="0" data-slider-max="100" data-slider-step="10" data-slider-value="0" data-slider-handle="square"/>
+						</div>
+					</div>
+				</div>
+				<div id="collapsible-1" class="collapse">
+					<div class="row rowSlider" id="rowBodyP1">
+						<div class="col-xs-4 text-center bodyslider">
+							<input id="TerrasseP1" data-slider-orientation="vertical" data-slider-id='TerrasseP1Slider' type="text" data-slider-min="0" data-slider-max="100" data-slider-step="10" data-slider-value="0" data-slider-handle="square"/>
+						</div>
+						<div class="col-xs-4 text-center bodyslider">
+							<input id="CuisineP1" data-slider-orientation="vertical" data-slider-id='CuisineP1Slider' type="text" data-slider-min="0" data-slider-max="100" data-slider-step="10" data-slider-value="0" data-slider-handle="square"/>
+						</div>
+						<div class="col-xs-4 text-center bodyslider">
+							<input id="SAMP1" data-slider-orientation="vertical" data-slider-id='SAMP1Slider' type="text" data-slider-min="0" data-slider-max="100" data-slider-step="10" data-slider-value="0" data-slider-handle="square"/>
+						</div>
+					</div>
+					<div class="row" id="rowBodyLabelP1">
+						<div class="col-xs-4 text-center">
+							Salon
+						</div>
+						<div class="col-xs-4 text-center">
+							Cuisine
+						</div>
+						<div class="col-xs-4 text-center">
+							SAM
+						</div>
+					</div>
+					
+				</div>
+			</div>
+			<div class="panel" id="panelP2">
+				<div class="accordion-heading container entete">
+					<div class="row" id="rowHeaderP2">
+						<div class="col-xs-6">
+							<a class="accordion-toggle" data-toggle="collapse" data-target="#collapsible-2" data-parent="#myAccordion" href="#collapsible-2">
+								Bureau
+							</a>
+						</div>
+						<div class="col-xs-6 text-right">
+							<input id="allP2" data-slider-id='allP2Slider' type="text" data-slider-min="0" data-slider-max="100" data-slider-step="10" data-slider-value="0" data-slider-handle="square"/>
+						</div>
+					</div>
+				</div>
+				<div id="collapsible-2" class="collapse">
+					<div class="row rowSlider" id="rowBodyP2">
+						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-center bodyslider">
+							<input id="BureauP2" data-slider-orientation="vertical" data-slider-id='BureauP2Slider' type="text" data-slider-min="0" data-slider-max="100" data-slider-step="10" data-slider-value="0" data-slider-handle="square"/>
+							<!--<br/><input type="text" id="sliderbureau" name ="sliderbureau" value=""/>-->
+						</div>
+					</div>
+					<div class="row" id="rowBodyLabelP2">
+						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-center font10">
+							Bureau
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="panel" id="panelP3">
+				<div class="accordion-heading container entete">
+					<div class="row" id="rowHeaderP3">
+						<div class="col-xs-6">
+							<a class="accordion-toggle" data-toggle="collapse" data-target="#collapsible-3" data-parent="#myAccordion" href="#collapsible-3">
+								Chambre d'amis
+							</a>
+						</div>
+						<div class="col-xs-6 text-right">
+							<input id="allP3" data-slider-id='allP3Slider' type="text" data-slider-min="0" data-slider-max="100" data-slider-step="10" data-slider-value="0" data-slider-handle="square"/>
+						</div>
+					</div>
+				</div>
+				<!--<div id="collapsible-3" class="collapse">
+					<p>Etiam posuere quam ac quam. Maecenas aliquet accumsan leo. Nullam dapibus fermentum ipsum. Etiam quis quam. Integer lacinia. Nulla est.</p>
+				</div>-->
+				
+			</div></div>
+			
+			
+			
+			
+	</body>
+</html>					
